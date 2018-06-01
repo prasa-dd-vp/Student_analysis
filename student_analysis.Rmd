@@ -1,0 +1,269 @@
+---
+title: "student_analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE)
+```
+
+```{r}
+#importing libraries
+library(ggplot2)
+library(dplyr)
+library(scales)
+library(grid)
+library(gridExtra)
+```
+
+```{r}
+#loading the dataset
+sa <- read.csv("student_details.csv", sep = ",",row.names = NULL)
+dim(sa)
+str(sa)
+summary(sa)
+```
+
+The dataset concists of 281 rows and 27 columns.The dataset contain the details of students inluding their marks, course details and others. The accuracy of analysis may not be so accurate because there are lot of missing values in the categorical variables. Analysis is done based on the available details to uncover some insights. 
+
+#univariate analysis
+
+```{r}
+#Histogram of gender
+ggplot(data=sa, aes(x= GENDER))+
+  geom_bar(stat = "count")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  ggtitle("Histogram of gender")+
+  labs(x="Gender")
+```
+In the Computer Science department based on the available details, the number of boys are more in numbers that does girls. 
+
+```{r}
+#histogram of sslc marks
+ggplot(data=sa, aes(x= SSLC.Marks))+
+  geom_histogram(binwidth = 1)+
+  scale_x_continuous(limits = c(50,100),
+                     breaks = seq(0,100,5),
+                     labels = dollar_format(suffix = "%", prefix = ""))+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  ggtitle("Histogram of SSLC marks")+
+  labs(x="SSLC marks")
+```
+
+The above histogram represents the distribution of 10th marks.It is clear that most of the students have secured marks between 83% and 98%
+
+```{r}
+#histogram of hsc marks
+ggplot(data=sa, aes(x= HSC.Marks))+
+  geom_histogram(binwidth = 1)+
+  scale_x_continuous(limits = c(50,100),
+                     breaks = seq(0,100,5),
+                     labels = dollar_format(suffix = "%", prefix = ""))+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  ggtitle("Histogram of HSC marks")+
+  labs(x="HSC marks")
+```
+
+The above histogram represents the distribution of 12th marks.
+
+
+```{r}
+#bar graph of board of education
+ggplot(subset(sa,SSLC.BOARD == c("state board","cbse","icse")), aes(x= SSLC.BOARD))+
+  geom_bar(stat = "count")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  ggtitle("Bar graph of board of education")+
+  labs(x="Board")
+```
+The above bar chart represents the SSLC board of education. Only one student among 281 studied in ICSE. The SSLC board cannot be used to determine the HSC board which the management has not collected. 
+
+
+```{r}
+#histogram of CGPA
+ggplot(data=sa, aes(x= CGPA))+
+  geom_histogram(binwidth = 0.05)+
+  scale_x_continuous(limits = c(5,9),
+                     breaks = seq(0,10,0.5))+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  ggtitle("Histogram of CGPA")+
+  labs(x="CGPA")
+```
+
+The above histogram represents the distribution of CGPA which mostly falls in between 5.5 and 8.8
+
+```{r}
+#bar graph of passport
+ggplot(data=sa, aes(x= PASSPORT))+
+  geom_bar(stat = "count")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  ggtitle("Bar graph of passport")+
+  labs(x="passport")
+```
+
+The above bar chart represents the number of students who have passports. The bar which stands out above all is the number of students who have not provided any details. The remaining two represents those who have and those who do not. The students who have their passport MAY have the probability of choosing higher studies instead of getting placed in a company.
+
+```{r}
+#histogram of number of languages known
+ggplot(data=sa, aes(x= Num.of.languages))+
+  geom_histogram()+
+  scale_x_continuous(limits = c(0,4),
+                     breaks = seq(1,3,1))+
+  ggtitle("Histogram of number of languages known")+
+  labs(x="Number of languages")
+```  
+The above histogram represents the number of languages known by the students. From the graph, very few people know more than one language.
+
+```{r}
+#histogram of number of professional courses
+ggplot(data=sa, aes(x= Num.of.courses))+
+  geom_histogram()+
+  scale_x_continuous(limits = c(0,9),
+                     breaks = seq(0,9,1))+
+  scale_y_continuous(limits = c(0,47))+
+  ggtitle("Histogram of number of professional courses")+
+  labs(x="Number of courses")
+```  
+
+The above one represents the number of professional courses they have learned during the course of study. 
+
+```{r}
+#histogram of number of arrears
+ggplot(data=sa, aes(x= Fail))+
+  geom_histogram()+
+  scale_x_continuous(limits = c(-1,14),
+                     breaks = seq(-1,14,1))+
+  ggtitle("Histogram of number of Number of arrears")+
+  labs(x="Number of arrears")
+```  
+
+The above histogram represents the number of arrears the students have. The maximum number of arrear is 13.
+
+```{r}
+#Frequency polygon of cgpa based on SSLC board
+ggplot(subset(sa,SSLC.BOARD == c("cbse","state board","icse")),aes(x = CGPA, colour = SSLC.BOARD))+
+  geom_freqpoly()+
+  scale_x_continuous(limits = c(5,9),
+                     breaks=seq(5,9,0.5))+
+  scale_y_continuous(limits = c(0,5))+
+  ggtitle("Frequency polygon of cgpa based on SSLC board")+
+  labs(x="CGPA", colour="SSLC board")
+
+```
+
+The above frequency polygon represents CGPA based on the SSLC board of education. From the graph, the CBSE students falls within the range of 7 and 8.7. The Stateboard students falls within the range of 6 and 8.5. The ICSC student have the CGPA of around 8.4.
+
+```{r}
+#Frequency polygon of cgpa based on SSLC board
+ggplot(subset(sa,SSLC.BOARD == c("cbse","state board","icse")),aes(x = Fail, colour = SSLC.BOARD))+
+  geom_freqpoly()+
+  scale_x_continuous(limits = c(0,13),
+                     breaks=seq(0,13,1))+
+  scale_y_continuous(limits = c(0,18),
+                     breaks = seq(0,18,3))+
+  ggtitle("Frequency polygon of cgpa based on SSLC board")+
+  labs(x="Arrears", colour="SSLC board")
+```
+
+The above frequency polygram represents the number of back logs the students have which is distinguished based on the board of education.
+The ICSC studen have no arrears. The number of stateboard students who have arrears is comparitively more than the CBSE students.
+
+#Bivariate analysis
+
+```{r}
+class_performance <- sa %>%
+  group_by(Branch) %>%
+  summarise(arrears = sum(Fail),
+            cgpa = mean(CGPA),
+            Number_of_students=n())
+head(class_performance)
+```
+
+
+```{r}
+#bar chart of number of students
+ggplot(data = class_performance, aes(x=Branch, y= Number_of_students))+
+  geom_bar(stat = 'identity')+
+  ggtitle("Number of students in each class")+
+  labs(x="Class", y="Number of students")
+```
+The above bar chart represents the number of students in each class. The order of class from maximum to minimum is C, B, (A, E) and D. 
+
+```{r}
+#bar char of number of arrears
+ggplot(data = class_performance, aes(x=Branch, y= arrears))+
+  geom_bar(stat = 'identity')+
+  ggtitle("Number of students in each class")+
+  labs(x="Class", y="Number of arrears")
+```
+The above bar chart represents the number of arrears based on the class. The section 'E' has the maximum number of arrears than the any other class. The remaining in order from high to low are D, A, C and B.
+
+```{r}
+#bar chart of average CGPA
+ggplot(data = class_performance, aes(x=Branch, y= cgpa))+
+  geom_bar(stat = 'identity')+
+  scale_y_continuous(limits = c(0,8.5),
+                     breaks = seq(0,8.5,1))+
+  ggtitle("Average CGPA of each class")+
+  labs(x="Class", y="Average CGPA")
+```
+
+The above bar chart represents the average CGPA secured class wise. It is very close and varies much lesser with each other class. The average CGPA from highest to lowest is B, C, E, A and D. The difference in average CGPA between the class A and E is 0.04.
+
+```{r}
+#top 10 cgpa
+ top_10_cgpa <- sa %>%
+  group_by(NAME)%>%
+  summarise(cgpa = mean(CGPA),
+            courses = mean(Num.of.courses)) %>%
+  arrange(desc(cgpa))%>%
+  top_n(10, cgpa)
+head(top_10_cgpa)
+```
+
+```{r}
+#box plot of top 10 student based on cgpa
+ggplot(data = top_10_cgpa, aes(x=NAME, y = cgpa))+
+  geom_boxplot()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  ggtitle("Top 10 students based on cgpa")
+```
+The above graph represents the box plot of top ten students based on their CGPA.
+
+```{r}
+#Top 10 students based on the number of arrears
+top_10_arrears <- sa %>%
+  group_by(NAME)%>%
+  summarise(arrears = mean(Fail)) %>%
+  top_n(10, arrears)
+head(top_10_arrears)
+```
+
+```{r}
+ggplot(data = top_10_arrears, aes(x=NAME, y= arrears))+
+  geom_boxplot()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  ggtitle("Top 10 students based on arrears")
+```
+
+
+
+```{r}
+top_10_courses <- sa %>%
+  group_by(NAME)%>%
+  summarise(courses = mean(Num.of.courses)) %>%
+  top_n(10, courses)
+head(top_10_courses)
+```
+
+```{r}
+#box plot of top_10 students based on number of professional courses 
+ggplot(data = top_10_courses, aes(x= NAME, y = courses))+
+  geom_boxplot()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  ggtitle("Top 10 students based on number of professional courses")
+```
+
+The above one represents the number of professional courses the student's have done.
+
+
+
